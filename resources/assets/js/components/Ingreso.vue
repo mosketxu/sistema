@@ -94,8 +94,14 @@
                             <div class="col-md-9">
                                 <div class="form-group">
                                     <label for="">Proveedor(*)</label>
-                                    <select class="form-control">
-                                    </select>
+                                    <v-select 
+                                        :on-search="selectProveedor"
+                                        label="nombre"
+                                        :options="arrayProveedor"
+                                        placeholder="Buscar Proveedores..."
+                                        :onChange="getDatosProveedor"
+                                    >
+                                    </v-select>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -265,6 +271,7 @@
 </template>
 
 <script>
+    import vSelect from 'vue-select';
     export default {
         data (){
             return {
@@ -277,6 +284,7 @@
                 total:0.0,
                 arrayIngreso : [],
                 arrayDetalle : [],
+                arrayProveedor: [],
                 listado:1, // si listado=1 visualizo ingresos y oculto detalle. Si es 0 alreves
 
                 modal : 0,
@@ -296,6 +304,9 @@
                 criterio : 'num_comprobante',
                 buscar : ''
             }
+        },
+        components:{
+            vSelect
         },
         computed:{
             isActived: function(){
@@ -345,6 +356,27 @@
                 me.pagination.current_page = page;
                 //Envia la petición para visualizar la data de esa página
                 me.listarIngreso(page,buscar,criterio);
+            },
+            selectProveedor(search,loading){
+                let me=this;
+                loading(true)
+                var url= '/proveedor/selectProveedor?filtro='+ search;
+
+                axios.get(url).then(function (response) {
+                    let respuesta= response.data;
+                    q: search
+                    me.arrayProveedor=respuesta.proveedores;
+                    loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            getDatosProveedor(val1){
+                let me=this;
+                me.loading=true;
+                me.idproveedor=val1.id;
+
             },
             registrarPersona(){
                 if (this.validarPersona()){
