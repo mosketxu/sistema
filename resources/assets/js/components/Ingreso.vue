@@ -132,7 +132,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label >Número Comprobante(*)</label>
-                                    <input type="text" class="form-control" v-model=" numero_comprobante" placeholder="0000xx">
+                                    <input type="text" class="form-control" v-model=" num_comprobante" placeholder="0000xx">
                                 </div>
                             </div>
                         </div>
@@ -141,8 +141,9 @@
                                 <div class="form-group">
                                     <label>Artículo</label>
                                     <div class="form-inline">
-                                        <input type="text" class="form-control" v-model="idarticulo" placeholder="Introduce el artículo">
+                                        <input type="text" class="form-control" v-model="codigo" @keyup.enter="buscarArticulo()" placeholder="Introduce el artículo">
                                         <button class="btn btn-primary">...</button>
+                                        <input type="text" readonly class="form-control" v-model="articulo">
                                     </div>
                                 </div>
                             </div>
@@ -276,17 +277,17 @@
         data (){
             return {
                 ingreso_id: 0,
-                idproveedor : '',
-                tipo_comprobante : 'Boleta',
-                serie_comprobante:'',
-                numero_comprobante:'',
-                impuesto:0.21,
+                idproveedor:0,
+                nombre : '',
+                tipo_comprobante : 'BOLETA',
+                serie_comprobante : '',
+                num_comprobante : '',
+                impuesto: 0.18,
                 total:0.0,
                 arrayIngreso : [],
-                arrayDetalle : [],
                 arrayProveedor: [],
-                listado:1, // si listado=1 visualizo ingresos y oculto detalle. Si es 0 alreves
-
+                arrayDetalle : [],
+                listado:1,
                 modal : 0,
                 tituloModal : '',
                 tipoAccion : 0,
@@ -302,10 +303,16 @@
                 },
                 offset : 3,
                 criterio : 'num_comprobante',
-                buscar : ''
+                buscar : '',
+                arrayArticulo: [],
+                idarticulo: 0,
+                codigo: '',
+                articulo: '',
+                precio: 0,
+                cantidad:0
             }
         },
-        components:{
+        components: {
             vSelect
         },
         computed:{
@@ -376,7 +383,24 @@
                 let me=this;
                 me.loading=true;
                 me.idproveedor=val1.id;
+            },
+            buscarArticulo(){
+                let me=this;
+                var url= '/articulo/buscarArticulo?filtro=' + me.codigo;
 
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;
+                    me.arrayArticulo = respuesta.articulos;
+
+                    if (me.arrayArticulo.length>0){
+                        me.articulo=me.arrayArticulo[0]['nombre'];
+                        me.idarticulo=me.arrayArticulo[0]['id'];
+                    }
+                    else{
+                        me.articulo='No existe artículo';
+                        me.idarticulo=0;
+                    }
+                })
             },
             registrarPersona(){
                 if (this.validarPersona()){
