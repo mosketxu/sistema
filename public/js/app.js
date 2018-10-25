@@ -43939,6 +43939,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -43947,10 +43958,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             ingreso_id: 0,
             idproveedor: 0,
             nombre: '',
-            tipo_comprobante: 'BOLETA',
+            tipo_comprobante: 'Boleta',
             serie_comprobante: '',
             num_comprobante: '',
-            impuesto: 0.18,
+            impuesto: '',
             total: 0.0,
             totalImpuesto: 0.0,
             totalParcial: 0.0,
@@ -44145,46 +44156,65 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var me = this;
             me.arrayDetalle.splice(index, 1);
         },
-        registrarPersona: function registrarPersona() {
-            if (this.validarPersona()) {
+        registrarIngreso: function registrarIngreso() {
+            if (this.validarIngreso()) {
                 return;
             }
-
             var me = this;
 
-            axios.post('/user/registrar', {
-                'nombre': this.nombre,
-                'tipo_documento': this.tipo_documento,
-                'num_documento': this.num_documento,
-                'direccion': this.direccion,
-                'telefono': this.telefono,
-                'email': this.email,
-                'usuario': this.usuario,
-                'password': this.password,
-                'idrol': this.idrol
+            axios.post('/ingreso/registrar', {
+                'idproveedor': this.idproveedor,
+                'tipo_comprobante': this.tipo_comprobante,
+                'serie_comprobante': this.serie_comprobante,
+                'num_comprobante': this.num_comprobante,
+                'impuesto': this.impuesto,
+                'total': this.total,
+                'data': this.arrayDetalle
 
             }).then(function (response) {
-                me.cerrarModal();
-                me.listarPersona(1, '', 'nombre');
+                me.listado = 1;
+                me.listarIngreso(1, '', 'num_comprobante');
+                me.idproveedor = 0;
+                me.tipo_comprobante = 'Boleta';
+                me.serie_comprobante = '';
+                me.num_comprobante = '';
+                me.impuesto = '';
+                me.total = 0.0;
+                me.idarticulo = 0;
+                me.cantidad = 0;
+                me.precio = 0;
+                me.arrayDetalle = [];
             }).catch(function (error) {
                 console.log(error);
             });
         },
-        validarPersona: function validarPersona() {
-            this.errorPersona = 0;
-            this.errorMostrarMsjPersona = [];
+        validarIngreso: function validarIngreso() {
+            this.errorIngreso = 0;
+            this.errorMostrarMsjIngreso = [];
 
-            if (!this.nombre) this.errorMostrarMsjPersona.push("El nombre de la persona no puede estar vacío.");
-            if (!this.usuario) this.errorMostrarMsjPersona.push("El nombre de usuario no puede estar vacío.");
-            if (!this.password) this.errorMostrarMsjPersona.push("El password no puede estar vacío.");
-            if (this.idrol == 0) this.errorMostrarMsjPersona.push("Debes seleccionar un rol para el usuario.");
+            if (this.idproveedor == 0) this.errorMostrarMsjIngreso.push("Selecciona un proveedor.");
+            if (this.tipo_comprobante == 0) this.errorMostrarMsjIngreso.push("Selecciona el tipo de compobante.");
+            if (!this.num_comprobante) this.errorMostrarMsjIngreso.push("Selecciona el numero de compobante.");
+            if (!this.impuesto) this.errorMostrarMsjIngreso.push("Selecciona el impuesto.");
+            if (this.arrayDetalle.length <= 0) this.errorMostrarMsjIngreso.push("Ingresa detalles.");
 
-            if (this.errorMostrarMsjPersona.length) this.errorPersona = 1;
+            if (this.errorMostrarMsjIngreso.length) this.errorIngreso = 1;
 
-            return this.errorPersona;
+            return this.errorIngreso;
         },
         mostrarDetalle: function mostrarDetalle() {
-            this.listado = 0;
+            var me = this;
+            me.listado = 0;
+            me.idproveedor = 0;
+            me.tipo_comprobante = 'Boleta';
+            me.serie_comprobante = '';
+            me.num_comprobante = '';
+            me.impuesto = '';
+            me.total = 0.0;
+            me.idarticulo = 0;
+            me.cantidad = 0;
+            me.precio = 0;
+            me.arrayDetalle = [];
         },
         ocultarDetalle: function ocultarDetalle() {
             this.listado = 1;
@@ -44691,18 +44721,22 @@ var render = function() {
                           }
                         },
                         [
+                          _c("option", { attrs: { value: "0.00" } }, [
+                            _vm._v("0 %")
+                          ]),
+                          _vm._v(" "),
                           _c("option", { attrs: { value: "0.04" } }, [
-                            _vm._v("4%")
+                            _vm._v("4 %")
                           ]),
                           _vm._v(" "),
                           _c("option", { attrs: { value: "0.10" } }, [
-                            _vm._v("10%")
+                            _vm._v("10 %")
                           ]),
                           _vm._v(" "),
                           _c(
                             "option",
                             { attrs: { value: "0.21", selected: "" } },
-                            [_vm._v("21%")]
+                            [_vm._v("21 %")]
                           )
                         ]
                       )
@@ -44815,6 +44849,35 @@ var render = function() {
                           }
                         })
                       ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c(
+                        "div",
+                        {
+                          directives: [
+                            {
+                              name: "show",
+                              rawName: "v-show",
+                              value: _vm.errorIngreso,
+                              expression: "errorIngreso"
+                            }
+                          ],
+                          staticClass: "form-group row div-error"
+                        },
+                        [
+                          _c(
+                            "div",
+                            { staticClass: "text-center text-error" },
+                            _vm._l(_vm.errorMostrarMsjIngreso, function(error) {
+                              return _c("div", {
+                                key: error,
+                                domProps: { textContent: _vm._s(error) }
+                              })
+                            })
+                          )
+                        ]
+                      )
                     ])
                   ]),
                   _vm._v(" "),
@@ -45245,7 +45308,7 @@ var render = function() {
                           staticClass: "btn btn-primary",
                           attrs: { type: "button" },
                           on: {
-                            onclick: function($event) {
+                            click: function($event) {
                               _vm.registrarIngreso()
                             }
                           }
