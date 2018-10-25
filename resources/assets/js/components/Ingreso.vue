@@ -139,7 +139,7 @@
                         <div class="form-group row border">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Artículo</label>
+                                    <label>Artículo <span style="color:red;" v-show="idarticulo==0"> (*Seleccione) </span> </label>
                                     <div class="form-inline">
                                         <input type="text" class="form-control" v-model="codigo" @keyup.enter="buscarArticulo()" placeholder="Introduce el artículo">
                                         <button class="btn btn-primary">...</button>
@@ -149,19 +149,19 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Precio</label>
+                                    <label>Precio <span style="color:red;" v-show="precio==0">(*Ingrese el precio)</span> </label>
                                     <input type="number" value="0" step="any" class="form-control" v-model="precio">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Cantidad</label>
+                                    <label>Cantidad <span style="color:red;" v-show="cantidad==0"> (*Ingrese la cantidad)</span></label>
                                     <input type="number"  value="0" class="form-control" v-model="cantidad">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-success form-control btnagregar"><i class="icon-plus"></i></button>
+                                    <button @click="agregarDetalle()" class="btn btn-success form-control btnagregar"><i class="icon-plus"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -177,56 +177,45 @@
                                             <th>Subtotal</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
+                                    <tbody v-if="arrayDetalle.length">
+                                        <tr  v-for="(detalle,index) in arrayDetalle" :key="detalle.id">
                                             <td>
-                                                <button type="button" class="btn btn-danger btn-sm">
+                                                <button @click="eliminarDetalle(index)" type="button" class="btn btn-danger btn-sm">
                                                     <i class="icon-close"></i>
                                                 </button>
                                             </td>
-                                            <td>
-                                                Articulo n
+                                            <td v-text="detalle.articulo">
                                             </td>
                                             <td>
-                                                <input type="number" value="3" class="form-control">
+                                                <input type="number" v-model="detalle.precio" value="3" class="form-control">
                                             </td>
                                             <td>
-                                                <input type="number" value="2" class="form-control">
+                                                <input type="number" v-model="detalle.cantidad" value="2" class="form-control">
                                             </td>
                                             <td>
-                                                $ 6.00
+                                                € {{(detalle.precio * detalle.cantidad).toFixed(2)}}
                                             </td>
                                         </tr>
+                                        <tr style="background-color: #CEECF5;">
+                                            <td colspan="4" align="right"><strong>Total Parcial:</strong></td>
+                                            <!-- <td>$ {{totalParcial=(total-totalImpuesto).toFixed(2)}}</td> -->
+                                            <td>$ {{totalParcial=(calcularTotal).toFixed(2)}}</td>
+                                        </tr>
+                                        <tr style="background-color: #CEECF5;">
+                                            <td colspan="4" align="right"><strong>Total Impuesto:</strong></td>
+                                            <!-- <td>$ {{totalImpuesto=((total*impuesto)/(1+impuesto)).toFixed(2)}}</td> -->
+                                            <td>$ {{totalImpuesto=((total*impuesto)).toFixed(2)}}</td>
+                                        </tr>
+                                        <tr style="background-color: #CEECF5;">
+                                            <td colspan="4" align="right"><strong>Total Neto:</strong></td>
+                                            <td>$ {{total=calcularTotal.toFixed(2)}}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody v-else>
                                         <tr>
-                                            <td>
-                                                <button type="button" class="btn btn-danger btn-sm">
-                                                    <i class="icon-close"></i>
-                                                </button>
+                                            <td colspan="5">
+                                                No hay artículos agregados
                                             </td>
-                                            <td>
-                                                Articulo n
-                                            </td>
-                                            <td>
-                                                <input type="number" value="3" class="form-control">
-                                            </td>
-                                            <td>
-                                                <input type="number" value="2" class="form-control">
-                                            </td>
-                                            <td>
-                                                $ 6.00
-                                            </td>
-                                        </tr>
-                                        <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Parcial</strong></td>
-                                            <td>$ 5</td>
-                                        </tr>
-                                        <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Impuesto</strong></td>
-                                            <td>$ 1</td>
-                                        </tr>
-                                        <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Neto</strong></td>
-                                            <td>$ 6</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -284,6 +273,8 @@
                 num_comprobante : '',
                 impuesto: 0.18,
                 total:0.0,
+                totalImpuesto:0.0,
+                totalParcial: 0.0,
                 arrayIngreso : [],
                 arrayProveedor: [],
                 arrayDetalle : [],
@@ -342,6 +333,13 @@
                 }
                 return pagesArray;             
 
+            },
+            calcularTotal:function(){
+                var resultado=0;
+                for (let i = 0; i < this.arrayDetalle.length; i++) {
+                    resultado =resultado+this.arrayDetalle[i].precio* this.arrayDetalle[i].cantidad;
+                }
+                return resultado;
             }
         },
         methods : {
@@ -356,13 +354,6 @@
                 .catch(function (error) {
                     console.log(error);
                 });
-            },
-            cambiarPagina(page,buscar,criterio){
-                let me = this;
-                //Actualiza la página actual
-                me.pagination.current_page = page;
-                //Envia la petición para visualizar la data de esa página
-                me.listarIngreso(page,buscar,criterio);
             },
             selectProveedor(search,loading){
                 let me=this;
@@ -401,6 +392,55 @@
                         me.idarticulo=0;
                     }
                 })
+            },
+            cambiarPagina(page,buscar,criterio){
+                let me = this;
+                //Actualiza la página actual
+                me.pagination.current_page = page;
+                //Envia la petición para visualizar la data de esa página
+                me.listarIngreso(page,buscar,criterio);
+            },
+            encuentra(id){
+                var sw=0;
+                for (var i = 0; i < this.arrayDetalle.length; i++) {
+                    if(this.arrayDetalle[i].idarticulo==id){
+                        sw=true;
+                    }
+                }
+                return sw;
+            },
+            agregarDetalle(){
+                let me=this;
+
+                if(me.idarticulo==0 || me.cantidad==0 || me.precio==0){
+
+                    }
+                else{
+                    if(me.encuentra(me.idarticulo)){
+                        swal({
+                            type:'error',
+                            title:'Error...',
+                            text: 'Ese artículo ya se encuentra agregado',
+                        })
+                    }
+                    else{
+                        me.arrayDetalle.push({
+                            idarticulo:me.idarticulo,
+                            articulo: me.articulo,
+                            cantidad:me.cantidad,
+                            precio: me.precio
+                        });
+                        me.codigo="";
+                        me.idarticulo=0;
+                        me.articulo="";
+                        me.precio=0;
+                        me.cantidad=0;
+                    }
+                }
+            },
+            eliminarDetalle(index){
+                let me=this;
+                me.arrayDetalle.splice(index,1);
             },
             registrarPersona(){
                 if (this.validarPersona()){
