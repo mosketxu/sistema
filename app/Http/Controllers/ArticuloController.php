@@ -92,7 +92,7 @@ class ArticuloController extends Controller
 
         $cont=Articulo::count();
 
-        $pdf= \PDF::loadView('pdf.articulospdf','articulos'=>$articulos,'cont'=>$cont);
+        $pdf= \PDF::loadView('pdf.articulospdf',['articulos'=>$articulos,'cont'=>$cont]);
 
         return  $pdf->download('articulos.pdf');
 

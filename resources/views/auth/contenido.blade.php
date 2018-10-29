@@ -21,7 +21,7 @@
   </div>
 
   <!-- Bootstrap and necessary plugins -->
-    <script src="js/plantilla.js"></script>
+  <script src="js/plantilla.js"></script>
 
 </body>
 </html>
