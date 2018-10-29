@@ -8,7 +8,7 @@
             <!-- Ejemplo de tabla Listado -->
             <div class="card">
                 <div class="card-header">
-                    <i class="fa fa-align-justify"></i> Ingresos
+                    <i class="fa fa-align-justify"></i> Ventas
                     <button type="button" @click="mostrarDetalle()" class="btn btn-secondary">
                         <i class="icon-plus"></i>&nbsp;Nuevo
                     </button>
@@ -24,8 +24,8 @@
                                         <option value="num_comprobante">Nº Comprobante</option>
                                         <option value="fecha_hora">Fecha-Hora</option>
                                     </select>
-                                    <input type="text" v-model="buscar" @keyup.enter="listarIngreso(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listarIngreso(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="buscar" @keyup.enter="listarVenta(1,buscar,criterio)" class="form-control" placeholder="Texto a buscar">
+                                    <button type="submit" @click="listarVenta(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                                     <tr>
                                         <th width="100px">Opciones</th>
                                         <th>UsuariO</th>
-                                        <th>Proveedor</th>
+                                        <th>Cliente</th>
                                         <th>Tipo Comprobante</th>
                                         <th>Serie Comprobante</th>
                                         <th>Numero Comprobante</th>
@@ -46,26 +46,26 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="ingreso in arrayIngreso" :key="ingreso.id">
+                                    <tr v-for="venta in arrayVenta" :key="venta.id">
                                         <td>
-                                            <button type="button" @click="verIngreso(ingreso.id)" class="btn btn-success btn-sm">
+                                            <button type="button" @click="verVenta(venta.id)" class="btn btn-success btn-sm">
                                             <i class="icon-eye"></i>
                                             </button>&nbsp;
-                                            <template v-if="ingreso.estado=='Registrado'">
-                                                <button type="button" class="btn btn-danger btn-sm" @click="desactivarIngreso(ingreso.id)">
+                                            <template v-if="venta.estado=='Registrado'">
+                                                <button type="button" class="btn btn-danger btn-sm" @click="desactivarVenta(venta.id)">
                                                     <i class="icon-trash"></i>
                                                 </button>
                                             </template>
                                         </td>
-                                        <td v-text="ingreso.usuario"></td>
-                                        <td v-text="ingreso.nombre"></td>
-                                        <td v-text="ingreso.tipo_comprobante"></td>
-                                        <td v-text="ingreso.serie_comprobante"></td>
-                                        <td v-text="ingreso.num_comprobante"></td>
-                                        <td v-text="ingreso.fecha_hora"></td>
-                                        <td v-text="ingreso.total"></td>
-                                        <td v-text="ingreso.impuesto"></td>
-                                        <td v-text="ingreso.estado"></td>
+                                        <td v-text="venta.usuario"></td>
+                                        <td v-text="venta.nombre"></td>
+                                        <td v-text="venta.tipo_comprobante"></td>
+                                        <td v-text="venta.serie_comprobante"></td>
+                                        <td v-text="venta.num_comprobante"></td>
+                                        <td v-text="venta.fecha_hora"></td>
+                                        <td v-text="venta.total"></td>
+                                        <td v-text="venta.impuesto"></td>
+                                        <td v-text="venta.estado"></td>
                                     </tr>                                
                                 </tbody>
                             </table>
@@ -416,10 +416,9 @@ import vSelect from "vue-select";
 export default {
     data() {
         return {
-            ingreso_id: 0,
-            idproveedor: 0,
-            proveedor: "",
-            nombre: "",
+            venta_id: 0,
+            idcliente: 0,
+            cliente: "",
             tipo_comprobante: "Boleta",
             serie_comprobante: "",
             num_comprobante: "",
@@ -427,15 +426,15 @@ export default {
             total: 0.0,
             totalImpuesto: 0.0,
             totalParcial: 0.0,
-            arrayIngreso: [],
-            arrayProveedor: [],
+            arrayVenta: [],
+            arrayCliente: [],
             arrayDetalle: [],
             listado: 1,
             modal: 0,
             tituloModal: "",
             tipoAccion: 0,
-            errorIngreso: 0,
-            errorMostrarMsjIngreso: [],
+            errorVenta: 0,
+            errorMostrarMsjVenta: [],
             pagination: {
                 total: 0,
                 current_page: 0,
@@ -498,10 +497,10 @@ export default {
         }
     },
     methods: {
-        listarIngreso(page, buscar, criterio) {
+        listarVenta(page, buscar, criterio) {
             let me = this;
             var url =
-                "/ingreso?page=" +
+                "/venta?page=" +
                 page +
                 "&buscar=" +
                 buscar +
@@ -511,34 +510,34 @@ export default {
                 .get(url)
                 .then(function(response) {
                     var respuesta = response.data;
-                    me.arrayIngreso = respuesta.ingresos.data;
+                    me.arrayVenta = respuesta.ventas.data;
                     me.pagination = respuesta.pagination;
                 })
                 .catch(function(error) {
                     console.log(error);
                 });
         },
-        selectProveedor(search, loading) {
+        selectCliente(search, loading) {
             let me = this;
             loading(true);
-            var url = "/proveedor/selectProveedor?filtro=" + search;
+            var url = "/cliente/selectCliente?filtro=" + search;
 
             axios
                 .get(url)
                 .then(function(response) {
                     let respuesta = response.data;
                     q: search;
-                    me.arrayProveedor = respuesta.proveedores;
+                    me.arrayCliente = respuesta.clientes;
                     loading(false);
                 })
                 .catch(function(error) {
                     console.log(error);
                 });
         },
-        getDatosProveedor(val1) {
+        getDatosCliente(val1) {
             let me = this;
             me.loading = true;
-            me.idproveedor = val1.id;
+            me.idcliente = val1.id;
         },
         buscarArticulo() {
             let me = this;
@@ -562,7 +561,7 @@ export default {
             //Actualiza la página actual
             me.pagination.current_page = page;
             //Envia la petición para visualizar la data de esa página
-            me.listarIngreso(page, buscar, criterio);
+            me.listarVenta(page, buscar, criterio);
         },
         encuentra(id) {
             var sw = 0;
@@ -794,7 +793,7 @@ export default {
         }
     },
     mounted() {
-        this.listarIngreso(1, this.buscar, this.criterio);
+        this.listarVenta(1, this.buscar, this.criterio);
     }
 };
 </script>

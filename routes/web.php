@@ -9,7 +9,7 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::group(['middleware' => ['guest']], function () {
     Route::get('/', 'Auth\LoginController@showLoginForm');
@@ -48,6 +48,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/ingreso', 'IngresoController@index');
         Route::post('/ingreso/registrar', 'IngresoController@store');
         Route::put('/ingreso/desactivar', 'IngresoController@desactivar');
+        Route::get('/ingreso/obtenerCabecera', 'IngresoController@obtenerCabecera');
+        Route::get('/ingreso/obtenerDetalles', 'IngresoController@obtenerDetalles');
 
     });
 
@@ -56,7 +58,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/cliente/registrar', 'ClienteController@store');
         Route::put('/cliente/actualizar', 'ClienteController@update');
     });
-    
+
+    Route::get('/venta', 'VentaController@index');
+    Route::post('/venta/registrar', 'VentaController@store');
+    Route::put('/venta/desactivar', 'VentaController@desactivar');
+    Route::get('/venta/obtenerCabecera', 'VentaController@obtenerCabecera');
+    Route::get('/venta/obtenerDetalles', 'VentaController@obtenerDetalles');
+
     Route::group(['middleware' => ['Administrador']], function () {
         Route::get('/categoria', 'CategoriaController@index');
         Route::post('/categoria/registrar', 'CategoriaController@store');
@@ -81,14 +89,22 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/ingreso', 'IngresoController@index');
         Route::post('/ingreso/registrar', 'IngresoController@store');
         Route::put('/ingreso/desactivar', 'IngresoController@desactivar');
+        Route::get('/ingreso/obtenerCabecera', 'IngresoController@obtenerCabecera');
+        Route::get('/ingreso/obtenerDetalles', 'IngresoController@obtenerDetalles');
 
         Route::get('/cliente', 'ClienteController@index');
         Route::post('/cliente/registrar', 'ClienteController@store');
         Route::put('/cliente/actualizar', 'ClienteController@update');
 
+        Route::get('/venta', 'VentaController@index');
+        Route::post('/venta/registrar', 'VentaController@store');
+        Route::put('/venta/desactivar', 'VentaController@desactivar');
+        Route::get('/venta/obtenerCabecera', 'VentaController@obtenerCabecera');
+        Route::get('/venta/obtenerDetalles', 'VentaController@obtenerDetalles');
+    
         Route::get('/rol', 'RolController@index');
         Route::get('/rol/selectRol', 'RolController@selectRol');
-        
+
         Route::get('/user', 'UserController@index');
         Route::post('/user/registrar', 'UserController@store');
         Route::put('/user/actualizar', 'UserController@update');
