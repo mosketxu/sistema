@@ -11,7 +11,8 @@
     <link rel="shortcut icon" href="img/favicon.png">
     <title>Sistema Ventas - IncanatoIT</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <!-- Icons -->
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js">
     <link href="css/plantilla.css" rel="stylesheet">
 </head>
 

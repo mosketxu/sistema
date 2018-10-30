@@ -19,12 +19,15 @@ Route::group(['middleware' => ['guest']], function () {
 Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
-
+    Route::get('/dashboard', 'DashboardController');
+    
     Route::get('/main', function () {
         return view('contenido/contenido');
     })->name('main');
 
     Route::group(['middleware' => ['Almacenero']], function () {
+        Route::get('/dashboard', 'DashboardController');
+
         Route::get('/categoria', 'CategoriaController@index');
         Route::post('/categoria/registrar', 'CategoriaController@store');
         Route::put('/categoria/actualizar', 'CategoriaController@update');
@@ -55,6 +58,8 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::group(['middleware' => ['Vendedor']], function () {
+        Route::get('/dashboard', 'DashboardController');
+
         Route::get('/cliente', 'ClienteController@index');
         Route::post('/cliente/registrar', 'ClienteController@store');
         Route::put('/cliente/actualizar', 'ClienteController@update');
@@ -73,6 +78,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::group(['middleware' => ['Administrador']], function () {
+        Route::get('/dashboard', 'DashboardController');
+
         Route::get('/categoria', 'CategoriaController@index');
         Route::post('/categoria/registrar', 'CategoriaController@store');
         Route::put('/categoria/actualizar', 'CategoriaController@update');
@@ -89,7 +96,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/articulo/listarArticulo', 'ArticuloController@listarArticulo');
         Route::get('/articulo/buscarArticuloVenta', 'ArticuloController@buscarArticuloVenta');
         Route::get('/articulo/listarArticuloVenta', 'ArticuloController@listarArticuloVenta');
-        // Route::get('/articulo/listarPdf', 'ArticuloController@listarPdf');
+        Route::get('/articulo/listarPdf', 'ArticuloController@listarPdf');
 
         Route::get('/proveedor', 'ProveedorController@index');
         Route::post('/proveedor/registrar', 'ProveedorController@store');
