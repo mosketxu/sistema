@@ -9,10 +9,13 @@
     <meta name="author" content="Incanatoit.com">
     <meta name="keyword" content="Sistema ventas Laravel Vue Js, Sistema compras Laravel Vue Js">
     <link rel="shortcut icon" href="img/favicon.png">
-    <title>Sistema Ventas - IncanatoIT.</title>
+    <!-- Id for Channel Notification -->   
+    <meta name="userId" content="{{ Auth::check() ? Auth::user()->id : ''}}">  
+
+    <title>Sistema Ventas - IncanatoIT</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js">
+    <!-- Icons -->
     <link href="css/plantilla.css" rel="stylesheet">
 </head>
 
@@ -48,15 +51,16 @@
                     <a class="dropdown-item" href="{{ route('logout') }}" 
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fa fa-lock"></i> Cerrar sesión</a>
-                    <form  id="logout-form" action="{{route('logout')}}" method="POST" style="display:none;">
-                        {{csrf_field()}}
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        {{ csrf_field() }}
                     </form>
                 </div>
             </li>
         </ul>
     </header>
 
-     <div class="app-body">
+    <div class="app-body">
         
         @if(Auth::check())
             @if (Auth::user()->idrol == 1)

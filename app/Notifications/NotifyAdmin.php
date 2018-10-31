@@ -11,6 +11,7 @@ class NotifyAdmin extends Notification
 {
     use Queueable;
     public $GlobalDatos;
+
     /**
      * Create a new notification instance.
      *
@@ -29,8 +30,25 @@ class NotifyAdmin extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database','broadcast'];
     }
+
+    public function toDatabase($notifiable){
+        return [
+            'datos' => $this->GlobalDatos 
+        ];
+    }
+
+    public function toBroadcast($notifiable) 
+    {   
+        return [ 
+            'data' => [ 
+                'datos' => $this->GlobalDatos 
+            ]      
+        ]; 
+    } 
+
+
 
     /**
      * Get the mail representation of the notification.
@@ -44,12 +62,6 @@ class NotifyAdmin extends Notification
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
-    }
-
-    public function toDatabase($notifiable){
-        return [
-            'datos' => $this->GlobalDatos 
-        ];
     }
 
     /**

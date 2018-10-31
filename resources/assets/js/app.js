@@ -7,6 +7,8 @@
 
 require('./bootstrap');
 
+window.$ = window.jQuery = require('jquery'); 
+
 window.Vue = require('vue');
 
 /**
@@ -37,17 +39,17 @@ const app = new Vue({
     created() {
         let me = this;     
         axios.post('notification/get').then(function(response) {
-        //    console.log(response.data);
+           //console.log(response.data);
            me.notifications=response.data;    
         }).catch(function(error) {
             console.log(error);
         });
 
-        // var userId = $('meta[name="userId"]').attr('content');
+        var userId = $('meta[name="userId"]').attr('content');
         
-        // Echo.private('App.User.' + userId).notification((notification) => {
-        //      me.notifications.unshift(notification); 
-        // }); 
+        Echo.private('App.User.' + userId).notification((notification) => {
+             me.notifications.unshift(notification); 
+        }); 
         
     }        
 });
